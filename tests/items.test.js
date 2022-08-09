@@ -46,4 +46,18 @@ describe('/api/v1/items', () => {
     expect(resp2.status).toEqual(200);
     expect(resp2.body).toEqual([user2Item]);
   });
+
+  it('GET /:id should get an item', async () => {
+    const { agent } = await signUpUser();
+
+    const { body: item } = await agent.post('/api/v1/items').send({
+      description: 'apples',
+      qty: 6,
+    });
+
+    const { status, body: got } = await agent.get(`/api/v1/items/${item.id}`);
+
+    expect(status).toBe(200);
+    expect(got).toEqual(item);
+  });
 });
