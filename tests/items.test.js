@@ -65,4 +65,20 @@ describe('/api/v1/items', () => {
     const { status } = await request(app).get('/api/v1/items');
     expect(status).toEqual(401);
   });
+
+  it('UPDATE /:id should update an item', async () => {
+    const { agent } = await signUpUser();
+
+    const { body: item } = await agent.post('/api/v1/items').send({
+      description: 'apples',
+      qty: 6,
+    });
+
+    const { status, body: updated } = await agent
+      .put(`/api/v1/items/${item.id}`)
+      .send({ bought: true });
+
+    expect(status).toBe(200);
+    expect(updated).toEqual({ ...item, bought: true });
+  });
 });
