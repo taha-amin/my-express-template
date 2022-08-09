@@ -81,4 +81,28 @@ describe('/api/v1/items', () => {
     expect(status).toBe(200);
     expect(updated).toEqual({ ...item, bought: true });
   });
+
+  it('UPDATE /:id should 403 for invalid users', async () => {
+    const { agent } = await signUpUser();
+
+    const { body: item } = await agent.post('/api/v1/items').send({
+      description: 'apples',
+      qty: 6,
+    });
+
+    const { agent: agent2 } = await signUpUser({
+      email: 'user2@email.com',
+      password: 'password',
+    });
+
+    const { status, body } = await agent2
+      .put(`/api/v1/items/${item.id}`)
+      .send({ bought: true });
+
+    expect(status).toBe(403);
+    expect(body).toEqual({
+      status: 403,
+      message: 'You do not have access to view this page',
+    });
+  });
 });
